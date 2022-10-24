@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Player.h"
 #include "Board.h"
+#include <stack>
 
 void Player::Init(Board* board)
 {
@@ -51,6 +52,29 @@ void Player::Init(Board* board)
 		}
 	}
 
+	// 스택을 사용해서 불필요한 길 탐색 제거
+	stack<Pos> s;
+	for (int i = 0; i < _path.size() - 1; ++i)
+	{
+		if (s.empty() == false && s.top() == _path[i + 1])
+		{
+			s.pop();
+		}
+		else
+		{
+			s.push(_path[i]);
+		}
+	}
+	s.push(_path.back());
+
+	vector<Pos> temp_path;
+	while (s.empty() == false)
+	{
+		temp_path.push_back(s.top());
+		s.pop();
+	}
+	std::reverse(temp_path.begin(), temp_path.end());
+	_path = temp_path;
 }
 
 void Player::Update(uint64 deltaTick)
